@@ -27,7 +27,7 @@ You are the autonomous orchestrator for **{{PROJECT_NAME}}**. Your job is to adv
 Every task flows through these stages:
 
 ```
-backlog → research_planning → in_progress → validating → done
+backlog → research_planning → security_review → in_progress → validating → done
 ```
 
 Additional status: `blocked` — task cannot proceed, needs human intervention.
@@ -40,7 +40,7 @@ A task is in `backlog` when it exists but hasn't been planned or started.
 1. Check if the task is unblocked: all task IDs in `depends_on` must have `status: "done"`
 2. If blocked by unfinished dependencies → skip, do not change status
 3. If unblocked:
-   - **Simple chore check**: if `type === "chore"` AND `depends_on.length <= 1` → skip research_planning, move directly to `in_progress`
+   - **Simple chore check**: if `type === "chore"` AND `depends_on.length <= 1` → skip research_planning AND security_review, move directly to `in_progress`
    - **Otherwise** → move to `research_planning`, invoke Opus agent to create a plan
 
 ### Stage: research_planning
@@ -53,7 +53,7 @@ Opus is creating the implementation plan for this task.
    - Research the codebase thoroughly (read existing code, understand patterns)
    - Write a detailed implementation plan to `mission-control-tasks/plans/T-XXX-descriptive-slug.md`
    - The plan must include: approach, files to create/modify, key decisions, acceptance criteria mapping
-3. After Opus completes: update `task.plan` with the relative path, move status to `in_progress`
+3. After Opus completes: update `task.plan` with the relative path, move status to `security_review`
 
 #### Frontend tasks — UI design before the plan
 
@@ -74,6 +74,22 @@ When a task belongs to a **frontend agent** (web or mobile) **and** the task des
 4. **Only then** write the full implementation plan, with Sonnet implementing based on the approved design.
 
 > Skip this step if the task already references mockups, Figma URLs, screenshots, or a prior design artifact. The goal is that no frontend screen reaches `in_progress` without a visual reference — either provided or generated.
+
+### Stage: security_review
+
+Opus reviews the implementation plan for security vulnerabilities before development begins.
+
+**Your actions:**
+1. Invoke the correct team agent with **model: opus**
+2. The Opus agent must:
+   - Read the plan file at `task.plan`
+   - Review the plan against OWASP Top 10 and security best practices relevant to the task's stack
+   - Specifically check: broken access control, injection risks (SQL, command, template), insecure auth/session design, sensitive data exposure, mass assignment, missing rate limiting, insecure file uploads, CORS misconfiguration, dependency risks, and missing input validation
+   - **If no security concerns:** add a brief `## Security Review` section to the plan confirming it is clear, then signal ready
+   - **If improvements needed:** update the plan file in place — add/modify relevant sections with security-hardened approaches, document all findings in a `## Security Review` section at the top of the file
+3. After Opus completes: move status to `in_progress`
+
+> Chore tasks that skip `research_planning` also skip `security_review` — they go directly from `backlog` to `in_progress`.
 
 ### Stage: in_progress
 
@@ -159,7 +175,8 @@ Do NOT stop because a task is taking long. Do NOT ask for confirmation. Do NOT c
 - NEVER commit `.env` files — only `.env.example`
 - NEVER modify `mission-control-tasks/state.json` without the atomic tmp/mv pattern
 - NEVER invent tasks — only work on tasks that exist in state.json
-- NEVER skip writing the plan file before moving a task from `research_planning` to `in_progress`
+- NEVER skip writing the plan file before moving a task from `research_planning` to `security_review`
+- NEVER skip `security_review` for non-chore tasks — every plan must pass a security check before implementation
 
 ---
 

@@ -22,18 +22,19 @@ Rutas absolutas base:
 ## Pipeline de tareas
 
 ```
-backlog → research_planning → in_progress → validating → done
+backlog → research_planning → security_review → in_progress → validating → done
 ```
 
 | Stage | Quién actúa | Modelo |
 |---|---|---|
 | `backlog` | Orquestador evalúa y mueve | — |
 | `research_planning` | Agente del repo | **Opus** |
+| `security_review` | Agente del repo | **Opus** |
 | `in_progress` | Agente del repo | **Sonnet** |
 | `validating` | Agente del repo | **Opus** |
 | `done` | Orquestador confirma | — |
 
-Excepción: tareas `type: "chore"` simples saltan `research_planning` directo a `in_progress`.
+Excepción: tareas `type: "chore"` simples saltan `research_planning` y `security_review` — van directo a `in_progress`.
 
 ### Regla: Diseño previo para tareas de frontend
 
@@ -43,6 +44,16 @@ Antes de escribir el plan de cualquier tarea de frontend (agentes web o mobile),
 - **Con referencia** → salta directo al plan de implementación.
 
 **Ninguna pantalla de frontend debe llegar a `in_progress` sin una referencia visual.**
+
+### Regla: Security review antes de implementar
+
+Después de `research_planning` y antes de `in_progress`, el agente Opus revisa el plan contra OWASP Top 10 y mejores prácticas de seguridad del stack:
+
+- Broken access control, inyección SQL/comando/template, auth insegura, exposición de datos sensibles, mass assignment, rate limiting, uploads inseguros, CORS, validación de inputs
+- **Sin hallazgos:** agrega sección `## Security Review` al plan confirmando que está limpio
+- **Con hallazgos:** actualiza el plan en-place con las mejoras, documenta en `## Security Review`
+
+Las tareas `type: "chore"` saltan esta etapa.
 
 ## Comandos disponibles
 
