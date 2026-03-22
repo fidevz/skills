@@ -35,6 +35,15 @@ backlog → research_planning → in_progress → validating → done
 
 Excepción: tareas `type: "chore"` simples saltan `research_planning` directo a `in_progress`.
 
+### Regla: Diseño previo para tareas de frontend
+
+Antes de escribir el plan de cualquier tarea de frontend (agentes web o mobile), el agente Opus verifica si hay referencias visuales explícitas (Figma URL, mockup, screenshot) en la descripción.
+
+- **Sin referencia visual** → invoca el skill `frontend-design` (o equivalente) para generar una propuesta de UI e incluirla en el plan como `## Proposed Design` / `## Diseño Propuesto`.
+- **Con referencia** → salta directo al plan de implementación.
+
+**Ninguna pantalla de frontend debe llegar a `in_progress` sin una referencia visual.**
+
 ## Comandos disponibles
 
 ### Activar el cron

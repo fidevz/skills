@@ -55,6 +55,26 @@ Opus is creating the implementation plan for this task.
    - The plan must include: approach, files to create/modify, key decisions, acceptance criteria mapping
 3. After Opus completes: update `task.plan` with the relative path, move status to `in_progress`
 
+#### Frontend tasks — UI design before the plan
+
+When a task belongs to a **frontend agent** (web or mobile) **and** the task description does not contain explicit visual references (Figma URLs, mockup paths, screenshot paths, or inline design specs), the Opus agent **must** generate a UI proposal before writing the implementation plan:
+
+1. **Invoke the `frontend-design` skill** (or equivalent design skill available in the project) describing the screen or component in full detail:
+   - Screen name, purpose, user actions, data displayed
+   - Project branding tokens and design references
+   - Constraints from the task (auth state, empty states, mobile-first, etc.)
+
+2. **The skill will generate** a visual proposal (HTML prototype, React component, or annotated design spec).
+
+3. **Include the output in the plan file** as a `## Proposed Design` section before the implementation steps:
+   - Layout description, component breakdown
+   - Key states: loading skeleton, empty state, error state
+   - Any generated code or design artifact from the skill
+
+4. **Only then** write the full implementation plan, with Sonnet implementing based on the approved design.
+
+> Skip this step if the task already references mockups, Figma URLs, screenshots, or a prior design artifact. The goal is that no frontend screen reaches `in_progress` without a visual reference — either provided or generated.
+
 ### Stage: in_progress
 
 Sonnet is implementing the plan.
