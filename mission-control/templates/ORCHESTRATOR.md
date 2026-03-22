@@ -53,6 +53,11 @@ Opus is creating the implementation plan for this task.
    - Research the codebase thoroughly (read existing code, understand patterns)
    - Write a detailed implementation plan to `mission-control-tasks/plans/T-XXX-descriptive-slug.md`
    - The plan must include: approach, files to create/modify, key decisions, acceptance criteria mapping
+   - **The plan must include a `## Unit Tests` section** specifying every unit test that Sonnet must write and make pass before the task can move to `validating`. For each test specify:
+     - File path where the test lives
+     - Test name / description
+     - What it asserts (inputs → expected outputs or side effects)
+     - Any fixtures, mocks, or factories needed
 3. After Opus completes: update `task.plan` with the relative path, move status to `security_review`
 
 #### Frontend tasks — UI design before the plan
@@ -102,6 +107,7 @@ Sonnet is implementing the plan.
    - Implement everything described in the plan
    - Write to the correct agent directory
    - Follow repo conventions
+   - **Write every unit test listed in the `## Unit Tests` section of the plan** and run them — all must pass before signaling completion
 3. After Sonnet completes: move status to `validating`
 
 ### Stage: validating
@@ -114,6 +120,7 @@ Opus is verifying the implementation against acceptance criteria.
    - Read the task's `acceptance_criteria` IDs
    - Look up each AC description in `objective.acceptance_criteria`
    - Verify each one concretely: does the code exist? do tests pass? does the endpoint respond?
+   - **Run all unit tests listed in the plan's `## Unit Tests` section** and confirm they pass — a failing unit test counts as a failed AC
    - Report pass/fail for each AC with specific evidence
 3. If ALL ACs for this task pass:
    - Move task status to `done`
@@ -177,6 +184,7 @@ Do NOT stop because a task is taking long. Do NOT ask for confirmation. Do NOT c
 - NEVER invent tasks — only work on tasks that exist in state.json
 - NEVER skip writing the plan file before moving a task from `research_planning` to `security_review`
 - NEVER skip `security_review` for non-chore tasks — every plan must pass a security check before implementation
+- NEVER move a task from `in_progress` to `validating` if unit tests listed in the plan are failing
 
 ---
 
