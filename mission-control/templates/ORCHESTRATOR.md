@@ -108,6 +108,11 @@ Sonnet is implementing the plan.
    - Write to the correct agent directory
    - Follow repo conventions
    - **Write every unit test listed in the `## Unit Tests` section of the plan** and run them — all must pass before signaling completion
+   - **Frontend tasks only:** after implementation is complete and tests pass, take a UI screenshot using Playwright:
+     1. Start the dev server if not running
+     2. Navigate to the relevant URL and capture a full-page screenshot
+     3. Save to `mission-control-tasks/screenshots/T-XXX.png` (create folder if needed)
+     4. Signal the orchestrator to write `"screenshot": "mission-control-tasks/screenshots/T-XXX.png"` in the task object in state.json
 3. After Sonnet completes: move status to `validating`
 
 ### Stage: validating
